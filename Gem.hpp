@@ -15,6 +15,7 @@ class Gem
 		Color get_color();
 		int get_value();
 		Size get_size();
+		void printGem();
 };
 #endif // !__GEM_HPP__
 

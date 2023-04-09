@@ -16,7 +16,7 @@ class Treasure
 		int get_value(std::vector<Gem> gemstones);
 		void find_optimal_value();
 
-		int get_gem_size_amount(std::vector<Gem> gems, Size size);
+		int get_gem_size_amount(Size size);
 		int getTotalGems();
 		
 };

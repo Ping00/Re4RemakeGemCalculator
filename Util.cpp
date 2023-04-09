@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <map>
 #include "Gem.hpp"
+#include "Size.hpp"
 #include "Treasure.hpp"
 void Util::makeCombinationUtil(std::vector<std::vector<int> >& ans, std::vector<int>& tmp, int n, int left, int k)
 {
@@ -132,18 +133,149 @@ void Util::recursiveTreasure(std::vector<std::vector<int>> presentGems, int curr
 	return;
 }
 
-std::vector<std::vector<int>> Util::cullIrregularities(std::vector<std::vector<int>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures)
+std::vector<std::vector<std::vector<int>>> Util::cullIrregularities(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures)
 {
-	//Fetch each individual set
-	//Fet matching treasure
-	//Check that gem mapping matches size
-	//If OK,
 
-	//Current treasure to examine
-	for (int i = 0; i < treasures.size(); i++)
+	//New final list containing all fully matching gem sets
+	std::vector<std::vector<std::vector<int>>> newCombinationVector;
+
+	//Iterate through list of possible combinations
+	for (int i = 0; i < completeSets.size(); i++)
 	{
+		//Current combination set to investigate
+		std::vector<std::vector<int>> currentSet = completeSets[i];
+		
+		//Keep track if set is ok to include
+		bool setIsOk = true;
+
+		//std::cout << "Combination #" << i + 1 << std::endl;
+		
+		//Iterate through all treasures the set includes
+		for (int j = 0; j < currentSet.size(); j++)
+		{
+			//Fet the corresponding treasure from the vector
+			Treasure currentTreasure = treasures[j];
+			
+			//Current combination for this treasure
+			std::vector<int> currentCombination = currentSet[j];
+
+			//Get amount of gems for the current treasure
+			int currentTreasureSmallGemAmount = currentTreasure.get_gem_size_amount(Size::SMALL);
+			int currentTreasureLargeGemAmount = currentTreasure.get_gem_size_amount(Size::LARGE);
+
+			//What gems does the current combination contain?
+			int currentCombinationSmallGems = 0;
+			int currentCombinationLargeGems = 0;
+
+			//Iterate through the combination values
+			for (int k = 0; k < currentCombination.size(); k++)
+			{
+				//Map corresponding gem from int
+				int currentValue = currentCombination[k];
+				Gem mappedGem = gemMap.at(currentValue);
+
+				//Get size of gem
+				if (mappedGem.get_size() == Size::SMALL)
+				{
+					currentCombinationSmallGems++;
+				}
+
+				if (mappedGem.get_size() == Size::LARGE)
+				{
+					currentCombinationLargeGems++;
+				}
+
+
+				//std::cout << currentCombination[k] << std::endl;
+			}
+
+			//Check if gemcounts are OK
+			//std::cout << "Treasure #" << j + 1 << "    [" << currentTreasureSmallGemAmount << "][" << currentTreasureLargeGemAmount << "]" << std::endl;
+			//std::cout << "Combination #" << j + 1 << " [" << currentCombinationSmallGems << "][" << currentCombinationLargeGems << "]" << std::endl;
+			
+			if (currentTreasureLargeGemAmount !=currentCombinationLargeGems || currentCombinationSmallGems != currentTreasureSmallGemAmount)
+			{
+				setIsOk = false;
+				break;
+			}
+
+		}
+
+		if (setIsOk)
+		{
+			//std::cout << "Set is OK!" << std::endl;
+			//std::cout << "Adding set to new vector" << std::endl;
+			newCombinationVector.push_back(currentSet);
+		}
+		else
+		{
+			//std::cout << "SET IS BAD!!!!" << std::endl;
+		}
+	}
+
+	return newCombinationVector;
+}
+
+std::vector<std::vector<int>> Util::calculateHighestCombination(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures)
+{
+	//Iterates through the vector
+	//Maps the number to a gem we have in our possession
+	//This list is fed into the Treasure which will tell us its actual value with this proposed combination
+	//Do this for every provided complete set, and print final values
+
+	//Variables to keep track of best set
+	int bestValue = 0;
+	std::vector<std::vector<int>> bestSet;
+
+	//Iterate through all provided sets
+	for (int i = 0; i < completeSets.size(); i++)
+	{
+		//Current set we are calculating;
+		std::vector<std::vector<int>> currentSet = completeSets[i];
+
+		//List of gems which match the currentSet structure
+		std::vector<std::vector<Gem>> currentGems;
+
+		//Get current set combinations
+		for (int j = 0; j < currentSet.size(); j++)
+		{
+			std::vector<int> currentCombination = currentSet[j];
+
+			std::vector<Gem> gemsInThisCombination;
+
+			//Iterate through the combination
+			for (int k = 0; k < currentCombination.size(); k++)
+			{
+				//Find the matching gem
+				int currentValue = currentCombination[k];
+				Gem mappedGem = gemMap.at(currentValue);
+
+				//Add the gem to the currentCombination vector
+				gemsInThisCombination.push_back(mappedGem);
+			}
+
+			//Push the gems to the currentGems vector
+			currentGems.push_back(gemsInThisCombination);
+		}
+
+		int currentTreasureValue = 0;
+		//Now compare treasures and Gemlists to get value of gems
+		for (int t = 0; t < treasures.size(); t++)
+		{
+			currentTreasureValue += treasures[t].get_value(currentGems[t]);
+		}
+
+		if (currentTreasureValue > bestValue)
+		{
+			std::cout << "Combination #" << i + 1 << " is the current best combination at: " << currentTreasureValue << std::endl;
+			
+			bestValue = currentTreasureValue;
+			bestSet = currentSet;
+		}
 
 	}
 
-	return std::vector<std::vector<int>>();
+	std::cout << "Best Value is: " << bestValue << std::endl;
+
+	return bestSet;
 }

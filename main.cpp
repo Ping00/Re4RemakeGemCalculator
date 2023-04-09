@@ -85,18 +85,31 @@ int main(int argc, char* argv[])
 
 	//New Solution
 
+	//Step 1: Select Treasures to be used in calculation
+
+	//Step 2: Select Gems to be used in calculation
+
+	//Step 3: Generate combinations available for each treasure using selected gems
+
+	//Step 4: Map numeric values from combination vectors to available gems
+
+	//Step 5: Re-examine the combinations and remove any gem missmatches (Large gem in small slot, etc)
+
+	//Step 6: Calculate value of all treasures and store the best one
+
 	//STEP 1
 	//Generate combinations of all selected treasures and gemstones
 	//Only amount of gemstones and treasure slots required, type of gemstones will be defined later
-	//As this is just a combinatorics problem.
 	//PSA: Requires that: gemstones >= treasure slots
 	
-	//NOTE! we can fill in any leftover slots if we fill the identity list with 'duds' when we do the final validation so 
+	//NOTE! we can fill in any leftover slots if we fill the identity of the missing gems with 'duds' when we do the final validation so 
 	//n should always be >= k regardless of actual gems in possession, these combinations will simply be invalidated later.
 
 	const int n = 8;	//Total Gems in calculation
 	const int k1 = 2;	//Total slots in first treasure
 	const int k2 = 2;	//Total slots in secondary treasure
+	//up to any amount of k acceptable, will cause O(y) where y = big
+
 	//const int k3 = 2;	//Total slots in secondary treasure
 	std::vector<std::vector<int>> firstTreasure = Util::make_combinations(n, k1);
 	std::vector<std::vector<int>> secondTreasure = Util::make_combinations(n, k2);
@@ -168,6 +181,9 @@ int main(int argc, char* argv[])
 	//After gems have been assigned, Assign treasure gem sizes as well to selected treasures.
 	std::map<int, Gem> gemMap = {};
 
+	//NOTE FIX LATER
+	//If amount of gems selected is less than amount of slots, then fill remaining list with undefined gems
+
 	//This would be loaded from outside
 	std::vector<Gem> gemsUsed = 
 	{ 
@@ -190,6 +206,8 @@ int main(int argc, char* argv[])
 	Treasure flagon = Treasure(4000, 2, 0);
 	Treasure bangle = Treasure(4000, 2, 0);
 
+	//TODO WRAP TREASURS AND THINGS TOGETHER SO THEY CAN BE MANIPULATED AT ONE LOCATION WITHOUT BREAKING EVERYTHING
+
 	//Defining list of treasures (Should also be loaded from outside
 	std::vector<Treasure> treasuresUsed = {
 		flagon, 
@@ -202,11 +220,30 @@ int main(int argc, char* argv[])
 	//Second pass, pass every defined combination set once more with these new rules
 	//Sets with Gems that do not match the indicated sizes will become invalidated
 	
-	
+	//List with all non-matching treasure gem combinations removed (No big gems in a treasure with only small gems etc.)
+	std::vector<std::vector<std::vector<int>>> treasureCombinationsWithoutInvalidGems = Util::cullIrregularities(treasureSets, gemMap, treasuresUsed);
+
+	std::cout << "Set Count after culling invalid gem combinations #" << treasureCombinationsWithoutInvalidGems.size() << std::endl;
 
 	//Step 5 Calculate total value of each Set, Highest one is the best available one.
+	std::vector<std::vector<int>> bestSet = Util::calculateHighestCombination(treasureCombinationsWithoutInvalidGems, gemMap, treasuresUsed);
 
+	std::cout << "The best gem combination is the following:" << std::endl;
 
+	std::vector<std::vector<int>> currentTreasure = bestSet;
+	for (int j = 0; j < currentTreasure.size(); j++)
+	{
+		std::vector<int> treasureCombination = currentTreasure[j];
+		for (int k = 0; k < treasureCombination.size(); k++)
+		{
+			//
+			Gem gem = gemMap.at(treasureCombination[k]);
+			gem.printGem();
+			//std::cout << treasureCombination[k] << " ";
+		}
+		std::cout << std::endl;
+	}
+	std::cout << "------" << std::endl;
 
 	return 0;
 }

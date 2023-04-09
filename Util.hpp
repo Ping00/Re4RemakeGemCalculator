@@ -13,7 +13,8 @@ class Util
 		static void print_combinations(std::vector<std::vector<int>> combinations);
 
 		static void recursiveTreasure(std::vector<std::vector<int>> presentGems, int currentVectorIndex, std::vector<std::vector<std::vector<int>>> vectorOfTreasures, std::vector<std::vector<std::vector<int>>> &treasureSets);
-		static std::vector<std::vector<int>> cullIrregularities(std::vector<std::vector<int>> completeSets, std::map<int,Gem> gemMap, std::vector<Treasure> treasures);
+		static std::vector<std::vector<std::vector<int>>> cullIrregularities(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int,Gem> gemMap, std::vector<Treasure> treasures);
+		static std::vector<std::vector<int>> calculateHighestCombination(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures);
 };
 #endif // !__UTIL_HPP__
 

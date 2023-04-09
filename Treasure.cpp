@@ -268,18 +268,20 @@ void Treasure::find_optimal_value()
 		//Perform culling of unmatching sets of gemstones
 		for (int i = 0; i < gem_permutations.size(); i++)
 		{
-			int large_gems = get_gem_size_amount(gem_permutations[i], Size::LARGE);
-			int small_gems = get_gem_size_amount(gem_permutations[i], Size::SMALL);
+			//int large_gems = get_gem_size_amount(gem_permutations[i], Size::LARGE);
+			//int small_gems = get_gem_size_amount(gem_permutations[i], Size::SMALL);
 
 
 
-			std::cout << "Permutation Small|Large : [" << small_gems << "][" << large_gems << "]" << std::endl;
+			//std::cout << "Permutation Small|Large : [" << small_gems << "][" << large_gems << "]" << std::endl;
 
+			/*
 			if (m_large_gems != large_gems || m_small_gems != small_gems)
 			{
 				std::cout << "Culling entry due to wrong gem count; from set" << std::endl;
 				gem_permutations.erase(gem_permutations.begin() + i);
 			}
+			*/
 
 
 		}
@@ -333,19 +335,18 @@ void Treasure::find_optimal_value()
 
 }
 
-int Treasure::get_gem_size_amount(std::vector<Gem> gems, Size size)
+int Treasure::get_gem_size_amount(Size size)
 {
-	int total_gems = 0;
-
-	for (int i = 0; i < gems.size(); i++)
+	if (size == Size::SMALL)
 	{
-		if (gems[i].get_size() == size)
-		{
-			total_gems++;
-		}
+		return m_small_gems;
+	}
+	else if (Size::LARGE)
+	{
+		return m_large_gems;
 	}
 
-	return total_gems;
+	return 0;
 }
 
 int Treasure::getTotalGems()
