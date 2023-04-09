@@ -133,7 +133,7 @@ void Util::recursiveTreasure(std::vector<std::vector<int>> presentGems, int curr
 	return;
 }
 
-std::vector<std::vector<std::vector<int>>> Util::cullIrregularities(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures)
+std::vector<std::vector<std::vector<int>>> Util::removeInvalidSets(std::vector<std::vector<std::vector<int>>> completeSets, std::map<int, Gem> gemMap, std::vector<Treasure> treasures)
 {
 
 	//New final list containing all fully matching gem sets
@@ -166,6 +166,7 @@ std::vector<std::vector<std::vector<int>>> Util::cullIrregularities(std::vector<
 			//What gems does the current combination contain?
 			int currentCombinationSmallGems = 0;
 			int currentCombinationLargeGems = 0;
+			int	currentCombinationEmptySlot = 0;
 
 			//Iterate through the combination values
 			for (int k = 0; k < currentCombination.size(); k++)
@@ -183,6 +184,11 @@ std::vector<std::vector<std::vector<int>>> Util::cullIrregularities(std::vector<
 				if (mappedGem.get_size() == Size::LARGE)
 				{
 					currentCombinationLargeGems++;
+				}
+
+				if (mappedGem.get_size() == Size::NO_SIZE)
+				{
+					currentCombinationEmptySlot++;
 				}
 
 
@@ -278,4 +284,15 @@ std::vector<std::vector<int>> Util::calculateHighestCombination(std::vector<std:
 	std::cout << "Best Value is: " << bestValue << std::endl;
 
 	return bestSet;
+}
+
+int Util::getTotalSlots(std::vector<Treasure> treasures)
+{
+	int slots = 0;
+	for (auto selected : treasures)
+	{
+		slots += selected.getTotalSlots();
+	}
+
+	return slots;
 }

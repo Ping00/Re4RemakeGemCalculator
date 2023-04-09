@@ -17,7 +17,7 @@ class Treasure
 		void find_optimal_value();
 
 		int get_gem_size_amount(Size size);
-		int getTotalGems();
+		int getTotalSlots();
 		
 };
 #endif // !__HPP_TREASURE__

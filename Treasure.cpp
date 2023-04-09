@@ -349,7 +349,7 @@ int Treasure::get_gem_size_amount(Size size)
 	return 0;
 }
 
-int Treasure::getTotalGems()
+int Treasure::getTotalSlots()
 {
 	return m_small_gems + m_large_gems;
 }
