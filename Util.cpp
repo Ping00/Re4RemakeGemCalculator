@@ -199,6 +199,8 @@ std::vector<std::vector<std::vector<int>>> Util::removeInvalidSets(std::vector<s
 			//std::cout << "Treasure #" << j + 1 << "    [" << currentTreasureSmallGemAmount << "][" << currentTreasureLargeGemAmount << "]" << std::endl;
 			//std::cout << "Combination #" << j + 1 << " [" << currentCombinationSmallGems << "][" << currentCombinationLargeGems << "]" << std::endl;
 			
+			//TODO: EMPTY GEMS INVALIDATES THE ENTIRE SET
+			//Kinda allright to be honest, but still. would be nice to not have everything nuked by it.
 			if (currentTreasureLargeGemAmount !=currentCombinationLargeGems || currentCombinationSmallGems != currentTreasureSmallGemAmount)
 			{
 				setIsOk = false;

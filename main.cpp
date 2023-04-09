@@ -17,6 +17,8 @@ int main(int argc, char* argv[])
 	const Treasure flagon	= Treasure(4000, 2, 0);
 	const Treasure bangle	= Treasure(4000, 2, 0);
 	const Treasure clock	= Treasure(4000, 1, 1);
+	const Treasure mask		= Treasure(4000, 3, 0);
+	const Treasure chalice	= Treasure(8000, 0, 3);
 
 	//Gemstones
 	const Gem redSmall		= Gem(3000,	Color::RED,			Size::SMALL);
@@ -31,20 +33,22 @@ int main(int argc, char* argv[])
 	 
 	std::vector<Treasure> selectedTreasures = {
 		flagon,
-		bangle,
-		clock
+		chalice,
+		clock,
 	};
 
 	//Step 2: Select Gems to be used in calculation
 	std::vector<Gem> selectedGems =
 	{
 		redSmall,
+		redSmall,
 		blueSmall,
 		blueSmall,
-		blueSmall,
-		yellowSmall,
+		redSmall,
 		redLarge,
 		greenLarge,
+		purpleLarge,
+		purpleLarge,
 	};
 
 	//Should our selected gems be < than the total amount of slots on our treasures;
@@ -118,7 +122,7 @@ int main(int argc, char* argv[])
 	//New vector containing only valid sets
 	std::vector<std::vector<std::vector<int>>> treasureCombinationsWithoutInvalidGems = Util::removeInvalidSets(possibleTreasureSets, gemMap, selectedTreasures);
 
-	std::cout << "Set Count after removing invalid gem combinations #" << treasureCombinationsWithoutInvalidGems.size() << std::endl;
+	std::cout << "#" << treasureCombinationsWithoutInvalidGems.size() << " Out of #" << possibleTreasureSets.size() << " were valid" << std::endl;
 
 	//Step 6: Calculate remaining values with provided gem combinations and determine best one.
 	std::vector<std::vector<int>> bestSet = Util::calculateHighestCombination(treasureCombinationsWithoutInvalidGems, gemMap, selectedTreasures);
@@ -130,13 +134,17 @@ int main(int argc, char* argv[])
 	{
 		std::vector<int> treasureCombination = currentTreasure[j];
 		std::cout << "Treasure #" << j + 1 << std::endl;
+		
+		std::vector<Gem> gemList = {};
 		for (int k = 0; k < treasureCombination.size(); k++)
 		{
 			//
 			Gem gem = gemMap.at(treasureCombination[k]);
+			gemList.push_back(gem);
 			gem.printGem();
 			//std::cout << treasureCombination[k] << " ";
 		}
+		std::cout << "Total Value: " << selectedTreasures[j].get_value(gemList) << std::endl;
 		std::cout << std::endl;
 	}
 	std::cout << "------" << std::endl;
