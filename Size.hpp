@@ -3,6 +3,7 @@
 enum Size
 {
 	SMALL,
-	LARGE
+	LARGE,
+	NO_SIZE,
 };
 #endif // !__SIZE_HPP

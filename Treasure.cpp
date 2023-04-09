@@ -347,3 +347,8 @@ int Treasure::get_gem_size_amount(std::vector<Gem> gems, Size size)
 
 	return total_gems;
 }
+
+int Treasure::getTotalGems()
+{
+	return m_small_gems + m_large_gems;
+}

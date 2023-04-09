@@ -17,6 +17,7 @@ class Treasure
 		void find_optimal_value();
 
 		int get_gem_size_amount(std::vector<Gem> gems, Size size);
+		int getTotalGems();
 		
 };
 #endif // !__HPP_TREASURE__

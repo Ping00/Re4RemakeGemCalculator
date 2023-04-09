@@ -6,8 +6,12 @@
 #include "Treasure.hpp"
 #include "Util.hpp"
 #include <map>
+#include <tuple>
 int main(int argc, char* argv[])
 {
+
+	//THIS IS A BRUTE FORCE SOLUTION 
+
 	/*
 	//Gem Types
 	Gem red_small		= Gem(3000, Color::RED,		Size::SMALL);
@@ -16,6 +20,7 @@ int main(int argc, char* argv[])
 	Gem green_large		= Gem(5000, Color::GREEN,	Size::LARGE);
 	Gem purple_large	= Gem(6000, Color::PURPLE,	Size::LARGE);
 	Gem red_large		= Gem(9000, Color::RED,		Size::LARGE);
+	Gem empty			= Gem(0,	Color::NONE,	Size::NONE);
 
 	Treasure flagon = Treasure(4000, 2, 0);
 	Treasure bangle = Treasure(4000, 0, 2);
@@ -89,20 +94,26 @@ int main(int argc, char* argv[])
 	//NOTE! we can fill in any leftover slots if we fill the identity list with 'duds' when we do the final validation so 
 	//n should always be >= k regardless of actual gems in possession, these combinations will simply be invalidated later.
 
-	const int n = 5;	//Total Gems in calculation
+	const int n = 8;	//Total Gems in calculation
 	const int k1 = 2;	//Total slots in first treasure
-	const int k2 = 3;	//Total slots in secondary treasure
-	std::vector<std::vector<int>> flagonCombinations = Util::make_combinations(n, k1);
-	std::vector<std::vector<int>> maskCombinations = Util::make_combinations(n, k2);
+	const int k2 = 2;	//Total slots in secondary treasure
+	//const int k3 = 2;	//Total slots in secondary treasure
+	std::vector<std::vector<int>> firstTreasure = Util::make_combinations(n, k1);
+	std::vector<std::vector<int>> secondTreasure = Util::make_combinations(n, k2);
+	//std::vector<std::vector<int>> thirdTreasure = Util::make_combinations(n, k3);
+
+	std::cout << "Combinations for First treasure: " << firstTreasure.size() << std::endl;
+
+	Util::print_combinations(firstTreasure);
+	std::cout << "----" << std::endl;
+	Util::print_combinations(secondTreasure);
 
 	//This vector contains a vector of all our treasures, which contain a vector that contain all our combinations
 	//List of Treasures >> List of Combinations >> Value of combination
-	std::vector<std::vector<std::vector<int>>> treasureCollection = {};
-
-	//Temp print
-	Util::print_combinations(flagonCombinations);
-	std::cout << "-------" << std::endl;
-	Util::print_combinations(maskCombinations);
+	std::vector<std::vector<std::vector<int>>> vectorOfTreasures = {};
+	vectorOfTreasures.push_back(firstTreasure);
+	vectorOfTreasures.push_back(secondTreasure);
+	//vectorOfTreasures.push_back(thirdTreasure);
 
 	//STEP 2
 	//Generate groups of possible treasure
@@ -111,87 +122,91 @@ int main(int argc, char* argv[])
 	//This can be done by selecting each combination which is not present in the previous treasure
 	//this can be done up to n treasures
 
-
-	//Maskcombinations go first as since it takes most slots it will produce the least amount of possible sets of treasure
-	//2:3 order will result in 4 total combinations, 3:2 will result in 3
-
-	//List container a list of all possible treasure sets that the gems will allow
+	//All Possible sets of treasure
 	std::vector<std::vector<std::vector<int>>> treasureSets = {};
-	for (int i = 0; i < maskCombinations.size(); i++)
+
+	//Empty vector as default entry point
+	std::vector<std::vector<int>> presentGems = {};
+	int currentIndex = 0;
+	
+	std::cout << "TreasureSets Before creation: " << treasureSets.size() << std::endl;
+
+	Util::recursiveTreasure(presentGems, currentIndex, vectorOfTreasures, treasureSets);
+
+	std::cout << "TreasureSets After creation: " << treasureSets.size() << std::endl;
+
+	/*
+	for (int i = 0; i < treasureSets.size(); i++)
 	{
-		//Current gems used
-		std::vector<int> gemsUsedMask = maskCombinations[i];
-
-		std::cout << "Examining current mask combination: ";
-		for (int value : gemsUsedMask)
+		std::vector<std::vector<int>> currentTreasure = treasureSets[i];
+		for (int j = 0; j < currentTreasure.size(); j++)
 		{
-			std::cout << value;
-		}
-		std::cout << std::endl;
-
-		//Iterate through other treasure combinations
-		for (int j = 0; j < flagonCombinations.size(); j++)
-		{
-
-			//Current gems used
-			std::vector<int> gemsUsedFlagon = flagonCombinations[j];
-
-			std::cout << "Examining current flagon combination: [";
-			for (int value : gemsUsedFlagon)
+			std::vector<int> treasureCombination = currentTreasure[j];
+			for (int k = 0; k < treasureCombination.size(); k++)
 			{
-				std::cout << value;
-			}
-			std::cout << "] ";
-
-			
-			//value is key
-			bool gemCombinationValid = true;
-			for (int value : gemsUsedFlagon)
-			{
-				if (std::count(gemsUsedMask.begin(), gemsUsedMask.end(), value) == true)
-				{
-					//std::cout << "Contained Gem " << value << std::endl;
-					gemCombinationValid = false;
-					break;
-				}
-			}
-
-			if (gemCombinationValid)
-			{
-				//Current mask and flagon combination valid
-				std::cout << "Valid combination for mask and flagon";
-
-				//Insert combination into list
-				
-				//Create new treasure set
-				treasureSets.push_back(std::vector<std::vector<int>>());
-				treasureSets[i].push_back(gemsUsedMask);
-				treasureSets[i].push_back(gemsUsedFlagon);
-
+				std::cout << treasureCombination[k] << " ";
 			}
 			std::cout << std::endl;
 		}
+		std::cout << "------" << std::endl;
 	}
+	*/
 
-	//Map every gem to a gem existing in the game
+	//All Possible Gems
+	Gem red_small = Gem(3000, Color::RED, Size::SMALL);
+	Gem blue_small = Gem(4000, Color::BLUE, Size::SMALL);
+	Gem yellow_small = Gem(7000, Color::YELLOW, Size::SMALL);
+	Gem green_large = Gem(5000, Color::GREEN, Size::LARGE);
+	Gem purple_large = Gem(6000, Color::PURPLE, Size::LARGE);
+	Gem red_large = Gem(9000, Color::RED, Size::LARGE);
+	Gem undefined = Gem(0, Color::NO_COLOR, Size::NO_SIZE);
 
 
-	std::cout << "Contains #" << treasureSets.size() << " Sets of possible treasure combinations" <<std::endl;
-	for (int i = 0; i < treasureSets.size(); i++)
+	//Step 3
+	//Assign a gem to each numeric value equal to gems in possession
+	//(If fewer gems are used than there are available slots then the remainders will be filled with 'duds')
+	//After gems have been assigned, Assign treasure gem sizes as well to selected treasures.
+	std::map<int, Gem> gemMap = {};
+
+	//This would be loaded from outside
+	std::vector<Gem> gemsUsed = 
+	{ 
+		red_small,
+		red_small,
+		red_large, 
+		blue_small, 
+		blue_small,
+		blue_small,
+		yellow_small,
+		yellow_small
+	};
+	
+	for (int i = 0; i < gemsUsed.size(); i++)
 	{
-		std::cout << "Set contains #" << treasureSets[i].size() << std::endl;
+		gemMap.insert(std::make_pair(i + 1, gemsUsed[i]));
 	}
 
-	//Map each value from the treasureSets to an actual gemstone
-	std::map<int, Gem> gemMap;
+	//Treasures we have selected
+	Treasure flagon = Treasure(4000, 2, 0);
+	Treasure bangle = Treasure(4000, 2, 0);
 
-	//Create a list which contains our ACTUAL gemstones
-	//1 = Small Red (Ruby)
-	//2 = Small Red (Ruby)
-	//3 = Small Blue (Sapphire)
-	//4 = Small Yellow (Diamond)
-	//5 = Large Green (Emerald)
-	//6 = Large Purple (Alexandrite)
+	//Defining list of treasures (Should also be loaded from outside
+	std::vector<Treasure> treasuresUsed = {
+		flagon, 
+		bangle
+	};
+
+	//Note that treasures will always retain their order from the initial list.
+
+	//Step 4
+	//Second pass, pass every defined combination set once more with these new rules
+	//Sets with Gems that do not match the indicated sizes will become invalidated
+	
+	
+
+	//Step 5 Calculate total value of each Set, Highest one is the best available one.
+
+
 
 	return 0;
 }

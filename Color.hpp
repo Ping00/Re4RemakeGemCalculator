@@ -6,7 +6,8 @@ enum Color
 	BLUE,
 	YELLOW,
 	GREEN,
-	PURPLE
+	PURPLE,
+	NO_COLOR
 };
 #endif // !__COLOR_HPP__
 
