@@ -1,2 +1,5 @@
 # Re4RemakeGemCalculator
-Calculate best combination of gems for your treasures based on current available gems
+Select the treasures you wish to sell
+Select the gems you have in your inventory
+
+Get the resulting best gem combinations for your treasures to maximize your pesetas.
